@@ -14,26 +14,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Get the preference wrapper from the application
-        val preferenceWrapper = (application as PreferenceApplication).preferenceWrapper
+        // Get the settings store from the application (DATASTORE)
+        val settingsStore = (application as SettingsApplication).settingsStore
 
-        // Create the view model instance with the preference wrapper
-        val preferenceViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+        // Create the view model instance with the settings store
+        val settingsViewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return PreferenceViewModel(preferenceWrapper) as T
+                return SettingsViewModel(settingsStore) as T
             }
-        })[PreferenceViewModel::class.java]
+        })[SettingsViewModel::class.java]
 
         // Observe the text live data
-        preferenceViewModel.getText().observe(this) {
+        settingsViewModel.textLiveData.observe(this) {
             findViewById<TextView>(R.id.activity_main_text_view).text = it
         }
 
+        // Save text when button is clicked OR when EditText changes
         findViewById<Button>(R.id.activity_main_button).setOnClickListener {
-            // Save the text when the button is clicked
             val inputText = findViewById<EditText>(R.id.activity_main_edit_text).text.toString()
-            preferenceViewModel.saveText(inputText)
+            settingsViewModel.saveText(inputText)
         }
     }
 }
